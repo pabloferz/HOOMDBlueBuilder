@@ -2,7 +2,7 @@
 
 Builder for [HOOMD-blue](https://github.com/glotzerlab/hoomd-blue) using
 [BinaryBuilder.jl](https://github.com/JuliaPackaging/BinaryBuilder.jl).
-currently builds the `next` branch of HOOMD-blue for the following platforms:
+Currently builds the `next` branch of HOOMD-blue for the following platforms:
 
  - Linux (`x86_64`)
 
