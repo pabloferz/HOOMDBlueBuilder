@@ -18,5 +18,5 @@ $ julia --project=. build_tarballs.jl
 ```
 
 Your build products are then packed within the `products` folder. You can read
-more on building system in the [BinaryBuilder.jl
+more on the build system in the [BinaryBuilder.jl
 documentation](https://juliapackaging.github.io/BinaryBuilder.jl/stable).
