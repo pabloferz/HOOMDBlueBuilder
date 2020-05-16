@@ -21,6 +21,12 @@ sources = [
 
 # Bash recipe for building across all platforms
 script = raw"""
+cd $WORKSPACE/destdir/etc
+cat << EOF > nvblas.conf
+NVBLAS_CPU_BLAS_LIB $WORKSPACE/lib/libopenblas64_.so
+EOF
+echo "NVBLAS_CONFIG_FILE=$WORKSPACE/destdir/etc/nvblas.conf" >> environment
+
 cd $WORKSPACE/srcdir/cereal
 mkdir build && cd build
 
@@ -29,24 +35,27 @@ cmake .. \
     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_HOST_TOOLCHAIN} \
     -DJUST_INSTALL_CEREAL=TRUE
 cmake --build . --target install -j ${nproc}
+install_license ../LICENSE
 
-cd ..
-rm -rf build
-cd ../hoomd-blue
-mkdir build && cd build
+cd $WORKSPACE/srcdir/hoomd-blue
 git submodule update --init
-atomic_patch -p1 ../patches/do-not-build-python-api.patch
+mkdir build && cd build
 
 cmake .. \
     -DCMAKE_INSTALL_PREFIX=$prefix \
     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TARGET_TOOLCHAIN} \
     -DCMAKE_BUILD_TYPE=Release \
     -DPYTHON_EXECUTABLE=$prefix/bin/python3 \
-    -DBUILD_PYTHON_API=FALSE \
     -DENABLE_MPI=ON \
     -DENABLE_GPU=ON \
     -DCMAKE_CUDA_COMPILER=$prefix/cuda/bin/nvcc
 cmake --build . --target install -j ${nproc}
+install_license ../LICENSE
+
+cd $WORKSPACE/destdir
+mv hoomd/include/* include/
+rm -rf hoomd/include
+mv hoomd lib/
 """
 
 # These are the platforms we will build for by default, unless further
@@ -71,9 +80,10 @@ products = [
 
 # Dependencies that must be installed before this package can be built
 dependencies = [
-    Dependency("CompilerSupportLibraries_jll"),
     Dependency("CUDA_full_jll"),
+    Dependency("CompilerSupportLibraries_jll"),
     Dependency("Eigen_jll"),
+    Dependency("OpenBLAS_jll"),
     Dependency("OpenMPI_jll"),
     Dependency("pybind11_jll"),
 ]
