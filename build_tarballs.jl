@@ -8,6 +8,7 @@ version = v"3.0.0"
 
 # Collection of sources required to complete build
 sources = [
+    DirectorySource("./bundeled"),
     GitSource(
         "https://github.com/glotzerlab/hoomd-blue.git",
         "30b00532c427626b91ea91cd9403a9ed9a4abd7b"
@@ -34,12 +35,14 @@ rm -rf build
 cd ../hoomd-blue
 mkdir build && cd build
 git submodule update --init
+atomic_patch -p1 ../patches/do-not-build-python-api.patch
 
 cmake .. \
     -DCMAKE_INSTALL_PREFIX=$prefix \
     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TARGET_TOOLCHAIN} \
     -DCMAKE_BUILD_TYPE=Release \
     -DPYTHON_EXECUTABLE=$prefix/bin/python3 \
+    -DBUILD_PYTHON_API=FALSE \
     -DENABLE_MPI=ON \
     -DENABLE_GPU=ON \
     -DCMAKE_CUDA_COMPILER=$prefix/cuda/bin/nvcc
@@ -68,6 +71,7 @@ products = [
 
 # Dependencies that must be installed before this package can be built
 dependencies = [
+    Dependency("CompilerSupportLibraries_jll"),
     Dependency("CUDA_full_jll"),
     Dependency("Eigen_jll"),
     Dependency("OpenMPI_jll"),
