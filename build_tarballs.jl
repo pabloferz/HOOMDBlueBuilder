@@ -8,7 +8,6 @@ version = v"3.0.0"
 
 # Collection of sources required to complete build
 sources = [
-    DirectorySource("./bundeled"),
     GitSource(
         "https://github.com/glotzerlab/hoomd-blue.git",
         "30b00532c427626b91ea91cd9403a9ed9a4abd7b"
@@ -17,6 +16,7 @@ sources = [
         "https://github.com/USCiLab/cereal.git",
         "34eb6f6bd6783018354c7043d5d6aa2eec4e4dbe"
     ),
+    DirectorySource("./bundled"),
 ]
 
 # Bash recipe for building across all platforms
