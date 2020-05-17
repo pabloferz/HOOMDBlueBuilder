@@ -71,13 +71,13 @@ platforms = expand_cxxstring_abis(platforms)
 
 # The products that we will ensure are always built
 products = [
-    LibraryProduct("_md", :libmd, "lib/hoomd/md"),
-    LibraryProduct("_dem", :libdem, "lib/hoomd/dem"),
-    LibraryProduct("_mpcd", :libmpcd, "lib/hoomd/mpcd"),
-    LibraryProduct("_example_plugin", :libplugin, "lib/hoomd/example_plugin"),
-    LibraryProduct("_metal", :libmetal, "lib/hoomd/metal"),
-    LibraryProduct("_hpmc", :libhpmc, "lib/hoomd/hpmc"),
-    LibraryProduct("_hoomd", :libhoomd, "lib/hoomd")
+    LibraryProduct("_md", :libmd, ["lib/hoomd/md"]),
+    LibraryProduct("_dem", :libdem, ["lib/hoomd/dem"]),
+    LibraryProduct("_mpcd", :libmpcd, ["lib/hoomd/mpcd"]),
+    LibraryProduct("_example_plugin", :libplugin, ["lib/hoomd/example_plugin"]),
+    LibraryProduct("_metal", :libmetal, ["lib/hoomd/metal"]),
+    LibraryProduct("_hpmc", :libhpmc, ["lib/hoomd/hpmc"]),
+    LibraryProduct("_hoomd", :libhoomd, ["lib/hoomd"]),
 ]
 
 # Dependencies that must be installed before this package can be built
