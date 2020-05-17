@@ -16,17 +16,10 @@ sources = [
         "https://github.com/USCiLab/cereal.git",
         "34eb6f6bd6783018354c7043d5d6aa2eec4e4dbe"
     ),
-    DirectorySource("./bundled"),
 ]
 
 # Bash recipe for building across all platforms
 script = raw"""
-cd $WORKSPACE/destdir/etc
-cat << EOF > nvblas.conf
-NVBLAS_CPU_BLAS_LIB $WORKSPACE/lib/libopenblas64_.so
-EOF
-echo "NVBLAS_CONFIG_FILE=$WORKSPACE/destdir/etc/nvblas.conf" >> environment
-
 cd $WORKSPACE/srcdir/cereal
 mkdir build && cd build
 
@@ -35,7 +28,9 @@ cmake .. \
     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_HOST_TOOLCHAIN} \
     -DJUST_INSTALL_CEREAL=TRUE
 cmake --build . --target install -j ${nproc}
-install_license ../LICENSE
+
+cd ..
+rm -rf build
 
 cd $WORKSPACE/srcdir/hoomd-blue
 git submodule update --init
@@ -50,12 +45,25 @@ cmake .. \
     -DENABLE_GPU=ON \
     -DCMAKE_CUDA_COMPILER=$prefix/cuda/bin/nvcc
 cmake --build . --target install -j ${nproc}
-install_license ../LICENSE
+
+cd ..
+install_license LICENSE
+rm -rf build
+
+LIBNVBLAS_PATH=$(find ${WORKSPACE}/destdir/ -name libnvblas.so)
+cd $(dirname ${LIBNVBLAS_PATH})
+cat << EOF > nvblas.conf
+NVBLAS_CPU_BLAS_LIB $WORKSPACE/lib/libopenblas64_.so
+EOF
 
 cd $WORKSPACE/destdir
 mv hoomd/include/* include/
 rm -rf hoomd/include
 mv hoomd lib/
+cd lib
+find hoomd -name "*.so" | while read libname; do
+    ln -s $libname .
+done
 """
 
 # These are the platforms we will build for by default, unless further
@@ -67,15 +75,15 @@ platforms = expand_cxxstring_abis(platforms)
 
 # The products that we will ensure are always built
 products = [
-    LibraryProduct("_md", :libmd),
-    LibraryProduct("_dem", :libdem),
-    LibraryProduct("_mpcd", :libmpcd),
-    LibraryProduct("_neighbor", :libneighbor),
+    LibraryProduct("_dem.cpython-38-x86_64-linux-gnu", :libdem),
+    LibraryProduct("_example_plugin.cpython-38-x86_64-linux-gnu", :libplugin),
+    LibraryProduct("_hpmc.cpython-38-x86_64-linux-gnu", :libhpmc),
+    LibraryProduct("_hoomd.cpython-38-x86_64-linux-gnu", :libhoomd),
+    LibraryProduct("_md.cpython-38-x86_64-linux-gnu", :libmd),
+    LibraryProduct("_metal.cpython-38-x86_64-linux-gnu", :libmetal),
+    LibraryProduct("_mpcd.cpython-38-x86_64-linux-gnu", :libmpcd),
+    LibraryProduct("_neighbor.cpython-38-x86_64-linux-gnu", :libneighbor),
     LibraryProduct("libquickhull", :libquickhull),
-    LibraryProduct("_example_plugin", :libplugin),
-    LibraryProduct("_metal", :libmetal),
-    LibraryProduct("_hpmc", :libhpmc),
-    LibraryProduct("_hoomd", :libhoomd),
 ]
 
 # Dependencies that must be installed before this package can be built
