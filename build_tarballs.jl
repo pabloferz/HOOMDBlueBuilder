@@ -60,10 +60,6 @@ cd $WORKSPACE/destdir
 mv hoomd/include/* include/
 rm -rf hoomd/include
 mv hoomd lib/
-cd lib
-find hoomd -name "*.so" | while read libname; do
-    ln -s $libname .
-done
 """
 
 # These are the platforms we will build for by default, unless further
@@ -75,15 +71,13 @@ platforms = expand_cxxstring_abis(platforms)
 
 # The products that we will ensure are always built
 products = [
-    LibraryProduct("_dem.cpython-38-x86_64-linux-gnu", :libdem),
-    LibraryProduct("_example_plugin.cpython-38-x86_64-linux-gnu", :libplugin),
-    LibraryProduct("_hpmc.cpython-38-x86_64-linux-gnu", :libhpmc),
-    LibraryProduct("_hoomd.cpython-38-x86_64-linux-gnu", :libhoomd),
-    LibraryProduct("_md.cpython-38-x86_64-linux-gnu", :libmd),
-    LibraryProduct("_metal.cpython-38-x86_64-linux-gnu", :libmetal),
-    LibraryProduct("_mpcd.cpython-38-x86_64-linux-gnu", :libmpcd),
-    LibraryProduct("_neighbor.cpython-38-x86_64-linux-gnu", :libneighbor),
-    LibraryProduct("libquickhull", :libquickhull),
+    LibraryProduct("_md", :libmd, "lib/hoomd/md"),
+    LibraryProduct("_dem", :libdem, "lib/hoomd/dem"),
+    LibraryProduct("_mpcd", :libmpcd, "lib/hoomd/mpcd"),
+    LibraryProduct("_example_plugin", :libplugin, "lib/hoomd/example_plugin"),
+    LibraryProduct("_metal", :libmetal, "lib/hoomd/metal"),
+    LibraryProduct("_hpmc", :libhpmc, "lib/hoomd/hpmc"),
+    LibraryProduct("_hoomd", :libhoomd, "lib/hoomd")
 ]
 
 # Dependencies that must be installed before this package can be built
